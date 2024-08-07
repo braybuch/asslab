@@ -12,14 +12,11 @@
 ; Notes:
 ;
 ; Postcondition:        Regiser B contains the results of the calculation
-;                       Register A is destroyed
 ;
 ; SUBROUTINE CONSTANTS
 
 Add_Odd
-	ldaa   0,x      ; Load the value at address X into register A
-
-        tfr	a,b
+        ldab           #4
         rts                     ; Sum of Odd Digit returned
 
         end
