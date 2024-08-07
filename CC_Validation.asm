@@ -2,9 +2,9 @@
 ;
 #include C:\68HCS12\registers.inc
 ;
-; Author(s):
-; Student Number(s):
-; Date:
+; Author(s):            Brayden Buchner
+; Student Number(s):    041123080
+; Date:                 2024-08-07
 ;
 ; Purpose:      Credit Card Number Validation
 
@@ -14,8 +14,8 @@ FINALRESULTS    equ     $1030                   ; Final number of valid and inva
 PROGRAMSTART    equ     $2000                   ; Executable code starts here
 
 ; Hardware Configuration - Complete the Constant values
-DIGIT3_PP0      equ    %1110                        ; HEX Display MSB (left most digit)
-DIGIT0_PP3      equ    %0111                        ; Display LSB (right most digit)
+DIGIT3_PP0      equ    %1110                    ; HEX Display MSB (left most digit)
+DIGIT0_PP3      equ    %0111                    ; Display LSB (right most digit)
 
 
 ; Program Constants - Do not change these values
@@ -51,12 +51,12 @@ TotalSize       ds      2
 ; Loop through all cards and validate, then display results
 
                 ; Initialize card pointer
-                ldx     #Cards                   ; Load x with address of first card
+                ldx     #Cards                  ; Load x with address of first card
 
                 ; Initialize size variable
                 ldd     #EndCards
                 std     TotalSize
-                
+
                 ; Initialize result variables
                 ldab    #0
                 stab    InvalidResult           ; Initialize invalidResult with 0
@@ -66,16 +66,16 @@ TotalSize       ds      2
 Loop
                 ; Calculate for odd numbers
                 ldab    #NUMDIGITS              ; Pass number of digits to Add_Odd sr
-                pshx
+                pshx                            ; Protect card pointer
                 jsr     Add_Odd                 ; Calculate for odd numbers
-                pulx
+                pulx                            ; Protect card pointer
                 pshb                            ; Push sum of odd numbers to stack
 
                 ; Calculate for even numbers
-                ldab    #NUMDIGITS
-                pshx
+                ldab    #NUMDIGITS              ; Pass number of digits to Add_Even sr
+                pshx                            ; Protect card pointer
                 jsr     Add_Even                ; Calculate for even numbers
-                pulx
+                pulx                            ; Protect card pointer
                 pshb                            ; Push sum of even numbers to stack
 
                 ; Check if card is valid
@@ -103,10 +103,10 @@ End_If
                 tfr     x,d                     ; Place x into register d
                 addd    #NUMDIGITS              ; Increment d by number of digits
                 tfr     d,x                     ; Put x back where it belongs
-                
+
                 ; Check if this is the last card
                 cpx     #TotalSize             ; test if this is the last card
-                blo     Loop                  ; Loop if it wasn't
+                blo     Loop                   ; Loop if it wasn't
 
 ; --- End of changed code
 

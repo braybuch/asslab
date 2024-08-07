@@ -1,35 +1,36 @@
+
+
 ; Add_Odd.asm
-; Author(s):            Brayden Buchner
-; Student Number(s):    041123080
+; Author(s):            Brayden Buchner,        Aidan Keuning
+; Student Number(s):    041123080,              041123875
 ; Date:                 2024-08-06
 ;
-; Purpose:              This subroutine sums the oddly positioned digits
+; Purpose:              This subroutine sums the oddly positioned digits after multiplying by 2 and cross adding double digits
 ;
 ; Preconditions:        Register X contains the memory location of the number to work on
 ;                       Register B contains the number of digits
 ;
 ; Postcondition:        Register B contains the sum of the odd digits
+;                       Register A is destroyed
+;                       Register X is destroyed
+;                       Register Y is destroyed
 
 oddSum         db      0
-currentOdd     ds      1
 number_Digits  ds      2
 
 Add_Odd
-                ldaa    #0
-                staa    oddSum
-                stab   number_Digits+1  ; Store number of digits passed to subroutine
-                ldy    #0               ; Init count to 0
+                ldaa    #0               ; Initialize a to zero
+                staa    oddSum           ; Store zero into the sum of odd numbers
+                stab    number_Digits+1  ; Store number of digits passed to subroutine
+                ldy     #0               ; Init count to 0
 
-
-Push_Odds       ; For i = 0, i less than number digits, i++
+Push_Odds       ; For i = 0, i less than number digits, i += 2
 
                 ; Extract even digit and push
-                ldaa    0,x             ; Load current digit into a
+                ldaa    2,x+            ; Load current digit into a and increment x to next even digit
                 psha                    ; Push digit to stack
-                inx                     ; Increment x to start from next odd digit
-                inx
 
-                ; i++
+                ; i =+ 2
                 iny                     ; Increment count
                 iny
 
@@ -37,43 +38,33 @@ Push_Odds       ; For i = 0, i less than number digits, i++
                 cpy     number_Digits   ; Test if this was the last digit
                 blo     Push_Odds       ; Loop if less than numDigits
 
-Pull_Odds              ; While i is greater or equal to 0
-                      pula                    ; Pull the even digit
-                      
-                      ;   Double a
-                staa    currentOdd
-                adca    currentOdd
-                daa
+Pull_Odds       ; While i is greater or equal to 0
+                pula                    ; Pull the even digit
 
-                       ; If this number has two digits
-                       cmpa    #9
-                       bgt     Cross_Add ; Cross add
-                       bra     Skip_Cross_Add
-                       
+                ;   Double a
+                ldab    #2              ; Load multiplation factor of 2
+                mul                     ; Multiply even digit by 2
+                tfr     b,a             ; Move digit back to a
+                clrb                    ; Clear the doubled bit
+
+                ; If this number has two digits
+                cmpa    #9
+                bgt     Cross_Add         ; Cross add if this has two digits
+                bra     Skip_Cross_Add  ; Skip if it's just one digit
+
 Cross_Add
-                ; Do cross add
-                tfr         a,b             ; Copy a to b
-                clra                    ; Clear leading register a
-                ldx     #10             ; Load 10 as divisor
-                idiv                    ; Divide current value by 10
-                ; b now contains the answer and x contains remainder
+                ; Do cross multiplication
+                ldab    #2              ; Load multiplation factor of 2
+                mul                     ; Multiply by 2
+                tfr     b,a             ; Move digit back to a
+                suba    #10             ; Subtract 10
+                inca                    ; Add 1
 
-                ; Swap x to contain address of value
-                stx         currentOdd
-                ldx     currentOdd
-                
-                ; Remove leading bit from value
-                ldaa    1,x
-                
-                ; Add remainder and answer together
-                aba
-                
-                
 Skip_Cross_Add
-                      ; Add to previous sum
-                ldab        oddSum     ; load previous sum
+                ; Add to previous sum
+                ldab    oddSum         ; load previous sum
                 aba                    ; Add previous sum to current digit
-                staa    oddSum         ; Store current sum
+                staa    oddSum         ; Store new sum
                 dey                    ; Decrement count
                 dey
                 cpy     #0             ; Test if this was the last digit
@@ -83,11 +74,11 @@ Skip_Cross_Add
                 clra
                 ldab    oddSum
 
-                rts                     ; Sum of Even Digits returned
+                rts                        ; Sum of Even Digits returned
 
                 end
 
 
 ; ---------------------------------
-;        END of Add_Even -
+;        END of Add_Odd -
 ;----------------------------------
