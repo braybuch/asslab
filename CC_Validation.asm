@@ -83,15 +83,10 @@ Loop
                 staa    ValidResult             ; Store new result
                 bra     End_If                  ; Exit else
 Inc_Valid
-
                 ldaa    InvalidResult           ; Load a with value of invalid results
                 inca                            ; Increment count of invalid
                 staa    InvalidResult           ; Store new result
 End_If
-                ; Do odd number calculations
-                ; Do even number calculations
-                ; Check if combined is valid credit card number
-                ; Increment valid/invalid totals
                 ; Check if this is the last card
 
 ; --- End of changed code
