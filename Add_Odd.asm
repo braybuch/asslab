@@ -15,7 +15,8 @@ currentOdd     ds      1
 number_Digits  ds      2
 
 Add_Odd
-
+                ldaa    #0
+                staa    oddSum
                 stab   number_Digits+1  ; Store number of digits passed to subroutine
                 ldy    #0               ; Init count to 0
 
@@ -36,28 +37,29 @@ Push_Odds       ; For i = 0, i less than number digits, i++
                 cpy     number_Digits   ; Test if this was the last digit
                 blo     Push_Odds       ; Loop if less than numDigits
 
-Pull_Odds      	; While i is greater or equal to 0
-              	pula                    ; Pull the even digit
-              	
-              	;   Double a
-                tfr     a,b
-                aba
+Pull_Odds              ; While i is greater or equal to 0
+                      pula                    ; Pull the even digit
+                      
+                      ;   Double a
+                staa    currentOdd
+                adca    currentOdd
+                daa
 
-               	; If this number has two digits
-               	cmpa    #9
-               	bgt     Cross_Add ; Cross add
-               	bra     Skip_Cross_Add
-               	
+                       ; If this number has two digits
+                       cmpa    #9
+                       bgt     Cross_Add ; Cross add
+                       bra     Skip_Cross_Add
+                       
 Cross_Add
                 ; Do cross add
-                tfr 	a,b             ; Copy a to b
+                tfr         a,b             ; Copy a to b
                 clra                    ; Clear leading register a
                 ldx     #10             ; Load 10 as divisor
                 idiv                    ; Divide current value by 10
                 ; b now contains the answer and x contains remainder
 
                 ; Swap x to contain address of value
-                stx 	currentOdd
+                stx         currentOdd
                 ldx     currentOdd
                 
                 ; Remove leading bit from value
@@ -68,7 +70,7 @@ Cross_Add
                 
                 
 Skip_Cross_Add
-              	; Add to previous sum
+                      ; Add to previous sum
                 ldab        oddSum     ; load previous sum
                 aba                    ; Add previous sum to current digit
                 staa    oddSum         ; Store current sum

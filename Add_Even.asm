@@ -17,16 +17,17 @@ currentNum      ds      1
 num_Digits      ds      2
 
 Add_Even
-
+                ldaa    #0
+                staa    evenSum
                 stab   num_Digits+1     ; Store number of digits passed to subroutine
                 ldy    #0               ; Init count to 0
                 
                 
 Push_Loop       ; For i = 0, i less than number digits, i++
 
-		; Extract even digit and push
+                ; Extract even digit and push
                 inx                     ; Increment x to start from second digit
-		ldaa    0,x             ; Load current digit into a
+                ldaa    0,x             ; Load current digit into a
                 psha                    ; Push digit to stack
                 inx                     ; Increment x to skip odd number
 
@@ -39,10 +40,10 @@ Push_Loop       ; For i = 0, i less than number digits, i++
                 blo     Push_Loop       ; Loop if less than numDigits
 
 Pull_Loop       ; While i is greater or equal to 0
-              	pula			; Pull the even digit
-              	
+                      pula                        ; Pull the even digit
+                      
                 ; Add this digit to count
-		ldab	evenSum         ; load previous sum
+                ldab        evenSum         ; load previous sum
                 aba                     ; Add previous sum to current digit
                 staa    evenSum         ; Store current sum
                 dey                     ; Decrement count
@@ -54,9 +55,9 @@ Pull_Loop       ; While i is greater or equal to 0
                 clra
                 ldab    evenSum
 
-        	rts             	; Sum of Even Digits returned
+                rts                     ; Sum of Even Digits returned
 
-       		end
+                       end
 
 
 ; ---------------------------------
