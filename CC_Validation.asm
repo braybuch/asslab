@@ -42,7 +42,7 @@ EndCards
 InvalidResult   ds      1                       ; Count of Invalid CARDs processed
 ValidResult     ds      1                       ; Count of Valid CARDs processed
 ; end of do not change
-TotalSize       ds      1
+TotalSize       ds      2
 
                 org     ProgramStart
                 lds     #ProgramStart           ; Stack used to protect values
@@ -55,7 +55,6 @@ TotalSize       ds      1
 
                 ; Initialize size variable
                 ldd     #EndCards
-                subd    Cards
                 std     TotalSize
                 
                 ; Initialize result variables
@@ -105,7 +104,7 @@ End_If
                 
                 ; Check if this is the last card
                 cpx     #TotalSize             ; test if this is the last card
-                blo     Loop                   ; Loop if it was
+                blo     Loop                  ; Loop if it wasn't
 
 ; --- End of changed code
 

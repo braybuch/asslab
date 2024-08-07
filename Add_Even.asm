@@ -14,49 +14,49 @@
 
 evenSum         db      0
 currentNum      ds      1
-num_Digits      ds      1
+num_Digits      ds      2
 
 Add_Even
 
-                stab    num_Digits      ; Store number of digits passed to subroutine
+                stab   num_Digits+1     ; Store number of digits passed to subroutine
+                ldy    #0               ; Init count to 0
                 
-                ; Initialize d with value in x
-		clra
-                clrb
-                ldd     0,x
-Push_Loop
-		ldy    #0               ; For i = 0, i less than number digits, i++
+                
+Push_Loop       ; For i = 0, i less than number digits, i++
 
-		; push a digit
-                ldx     #10             ; Load divisor
-                idiv                    ; Divide D by divisor in X
-                pshd                    ; Push digit/remainder to stack
-                tfr     x,d             ; Transfer result back to d
+		; Extract even digit and push
+                inx                     ; Increment x to start from second digit
+		ldaa    0,x             ; Load current digit into a
+                psha                    ; Push digit to stack
+                inx                     ; Increment x to skip odd number
 
-                ; increment i
-                iny                     ; Incrmenet count
-                cpy     #num_Digits     ; Test if this was the last digit
+                ; i++
+                iny                     ; Increment count
+                iny
+                
+                ; i < numDigits
+                cpy     num_Digits      ; Test if this was the last digit
                 blo     Push_Loop       ; Loop if less than numDigits
 
 Pull_Loop       ; While i is greater or equal to 0
-        	pula			; pull a digit to delete
-              	pula			; Pull another digit
+              	pula			; Pull the even digit
+              	
                 ; Add this digit to count
 		ldab	evenSum         ; load previous sum
                 aba                     ; Add previous sum to current digit
                 staa    evenSum         ; Store current sum
                 dey                     ; Decrement count
+                dey
                 cpy     #0              ; Test if this was the last digit
-                bge     Pull_Loop       ; Branch if there are more digits
+                bhi     Pull_Loop       ; Branch if there are more digits
                 
                 ; Return value
+                clra
                 ldab    evenSum
 
         	rts             	; Sum of Even Digits returned
 
        		end
-
-
 
 
 ; ---------------------------------
