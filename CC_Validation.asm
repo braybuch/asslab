@@ -41,6 +41,7 @@ EndCards
                 org  FINALRESULTS
 InvalidResult   ds      1                       ; Count of Invalid CARDs processed
 ValidResult     ds      1                       ; Count of Valid CARDs processed
+Temp            ds      1                       ; Define temp variable for passing pointers
 ; end of do not change
 
                 org     ProgramStart
@@ -49,40 +50,39 @@ ValidResult     ds      1                       ; Count of Valid CARDs processed
 ; --- Your code starts here
 ; Loop through all cards and validate, then display results
 
+                ; Initialize card pointer
                 ldx     Cards                   ; Load x with address of first card
+
+                ; Initialize variables
                 ldab    #0
-                stab    InvalidResult
-                stab    ValidResult
-Validation_Loop
-                pshx
-                ldaa    #NUMDIGITS
-                jsr     Add_Odd                 ; Add odd numbers and store in register a
-                psha
-                jsr     Add_Even                ; Add even numbers and store in register b
-                pula
-                jsr     Validate_CC             ; Check if card is valid and return boolean register a
+                stab    InvalidResult           ; Initialize invalidResult with 0
+                stab    ValidResult             ; Initialize validResult with 0
+                stab    Temp                    ; Initialize temp with 0
+                
+                ; Do while there are more cards to check
+Loop
+                ; Calculate for odd numbers
+                ldab    #NUMDIGITS              ; Pass number of digits to Add_Odd sr
+                jsr         Add_Odd                 ; Calculate for odd numbers
+                pshb                            ; Push sum of odd numbers to stack
+                
+                ; jsr        Add_Even                ; Calculate for even numbers
+                ; jsr         Validate_CC             ; Check credit card number
+                
+                ; If credit card was valid
+                
+                        ; Increment validResult
+                ; Else
+                        ; Increment invalidResult
 
-                ; Check if card was valid and track totals
-                cmpa    #1                      ; Was card valid?
-                bne     Invalid_Card            ; Card was invalid
+                ; If not last card, loop
+                
+                ; Do odd number calculations
+                ; Do even number calculations
+                ; Check if combined is valid credit card number
+                ; Increment valid/invalid totals
+                ; Check if this is the last card
 
-                ldab    ValidResult             ; Card was valid
-                addb    #1                      ; Increment count
-                stab    ValidResult             ; Store count
-
-Invalid_Card
-                ldab    InvalidResult           ; Card was invalid
-                addb    #1                      ; Increment count
-                stab    InvalidResult           ; Store count
-
-                bra     End_Validation
-End_Validation
-
-                pulb
-                cmpb    #NUMBERSOFCARDS         ; Check if x is greater than number of cards
-                bhi     End_Loop                ; X is lesser, Check next card
-                bra     Validation_Loop
-End_Loop
 ; --- End of changed code
 
 ; Do not change and code below here
