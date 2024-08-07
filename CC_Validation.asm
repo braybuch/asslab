@@ -14,8 +14,8 @@ FINALRESULTS    equ     $1030                   ; Final number of valid and inva
 PROGRAMSTART    equ     $2000                   ; Executable code starts here
 
 ; Hardware Configuration - Complete the Constant values
-DIGIT3_PP0      equ    %10000000                        ; HEX Display MSB (left most digit)
-DIGIT0_PP3      equ    %00000001                        ; Display LSB (right most digit)
+DIGIT3_PP0      equ    %1110                        ; HEX Display MSB (left most digit)
+DIGIT0_PP3      equ    %0111                        ; Display LSB (right most digit)
 
 
 ; Program Constants - Do not change these values
@@ -54,7 +54,7 @@ TotalSize       ds      1
                 ldx     #Cards                   ; Load x with address of first card
 
                 ; Initialize size variable
-		ldd     #EndCards
+                ldd     #EndCards
                 subd    Cards
                 std     TotalSize
                 
@@ -72,7 +72,9 @@ Loop
 
                 ; Calculate for even numbers
                 ldab    #NUMDIGITS
+                pshx
                 jsr     Add_Even                ; Calculate for even numbers
+                pulx
                 pshb                            ; Push sum of even numbers to stack
 
                 ; Check if card is valid
@@ -86,14 +88,14 @@ Loop
                 cmpb    #1                      ; Test if Validate_CC output true
                 beq     Inc_Valid               ; Branch if card is valid
                 ; else card is not valid
-                ldaa    InvalidResult             ; Load a with value of valid results
+                ldaa    InvalidResult           ; Load a with value of valid results
                 inca                            ; Increment count of valid
-                staa    InvalidResult             ; Store new result
+                staa    InvalidResult           ; Store new result
                 bra     End_If                  ; Exit else
-Inc_Valid
-                ldaa    ValidResult           ; Load a with value of invalid results
+Inc_Valid       ; if body
+                ldaa    ValidResult             ; Load a with value of invalid results
                 inca                            ; Increment count of invalid
-                staa    ValidResult           ; Store new result
+                staa    ValidResult             ; Store new result
 End_If
 
                 ; Increment x by number of digits
