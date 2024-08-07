@@ -1,22 +1,23 @@
 ; Add_Odd.asm
-; Author: Aidan Keuning and Brayden Buchner
-; Student Number: 041123875 and 04112308
-; Date: 04-08-2024
+; Author(s):            Brayden Buchner
+; Student Number(s):    041123080
+; Date:                 2024-08-06
 ;
-; Purpose: Performs the first step of CC validation, in which the odd numbered
-;          digits of the CC are added after being multiplied by 2.
+; Purpose:              This subroutine sums the oddly positioned digits
 ;
-; Preconditions:        Register X loaded with address of a 4-digit CC number
-;                       Register B is loaded with number of digits
+; Preconditions:        Register X contains the memory location of the number to work on
+;                       Register B contains the number of digits
 ;
-; Notes:
-;
-; Postcondition:        Regiser B contains the results of the calculation
-;
-; SUBROUTINE CONSTANTS
+; Postcondition:        Register B contains the sum of the odd digits
 
 Add_Odd
-        ldab           #4
-        rts                     ; Sum of Odd Digit returned
+        ldaa        0,x    ; load register a with number in position 1, x
+        adda        0,x         ; Multiply a by 2
+        ldab        2,x    ; load register b with number in position 3, x
+        addb        2,x         ; Multiply b by 2
+        aba                ; Add register a to register b
+        tfr     a,b
+        
+        rts                ; Sum of Odd Digit returned
 
         end

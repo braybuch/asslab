@@ -16,21 +16,25 @@
 
 Validate_CC
                 aba                     ; add register b to register a
-                tfr     b,a             ; Transfer a to b
+                tfr     a,b             ; Transfer a to b (Because it will fit and we divide with d)
+                clra                    ; Clear leading bit
 
                 ldx     #10             ; Load 10 into register x as divisor
                 idiv                    ; divide register b by x
 
-                cmpb    #0              ; compare remainder with #0
+                cpd    #0               ; compare remainder with #0
 
-                bne     VALIDATION_FALSE
-                ldaa    #1              ; Valid card
-VALIDATION_FALSE
-                ldaa    #0              ; Invalid card
+                bne     Validation_False
+                ldab    #1              ; Valid card
+                bra     End_Validation
+
+Validation_False
+                ldab    #0              ; Invalid card
+End_Validation
 
                 rts
 
-                        end
+                end
 
 ; ---------------------------------
 ;        END of Validate.asm -

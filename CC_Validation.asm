@@ -42,6 +42,7 @@ EndCards
 InvalidResult   ds      1                       ; Count of Invalid CARDs processed
 ValidResult     ds      1                       ; Count of Valid CARDs processed
 ; end of do not change
+TotalSize       ds      1
 
                 org     ProgramStart
                 lds     #ProgramStart           ; Stack used to protect values
@@ -52,18 +53,23 @@ ValidResult     ds      1                       ; Count of Valid CARDs processed
                 ; Initialize card pointer
                 ldx     #Cards                   ; Load x with address of first card
 
-                ; Initialize variables
+                ; Initialize size variable
+		ldd     #EndCards
+                subd    Cards
+                std     TotalSize
+                
+                ; Initialize result variables
                 ldab    #0
                 stab    InvalidResult           ; Initialize invalidResult with 0
                 stab    ValidResult             ; Initialize validResult with 0
-                
+
                 ; Do while there are more cards to check
 Loop
                 ; Calculate for odd numbers
                 ldab    #NUMDIGITS              ; Pass number of digits to Add_Odd sr
                 jsr     Add_Odd                 ; Calculate for odd numbers
                 pshb                            ; Push sum of odd numbers to stack
-                
+
                 ; Calculate for even numbers
                 ldab    #NUMDIGITS
                 jsr     Add_Even                ; Calculate for even numbers
@@ -72,22 +78,32 @@ Loop
                 ; Check if card is valid
                 pula                            ; Pull sum of even numbers
                 pulb                            ; Pull sum of add numbers
-		jsr     Validate_CC       	; Check credit card number
+                pshx                            ; Protect x
+                jsr     Validate_CC             ; Check credit card number
+                pulx                            ; Protect x
 
                 ; If credit card was valid
                 cmpb    #1                      ; Test if Validate_CC output true
                 beq     Inc_Valid               ; Branch if card is valid
                 ; else card is not valid
-                ldaa    ValidResult             ; Load a with value of valid results
+                ldaa    InvalidResult             ; Load a with value of valid results
                 inca                            ; Increment count of valid
-                staa    ValidResult             ; Store new result
+                staa    InvalidResult             ; Store new result
                 bra     End_If                  ; Exit else
 Inc_Valid
-                ldaa    InvalidResult           ; Load a with value of invalid results
+                ldaa    ValidResult           ; Load a with value of invalid results
                 inca                            ; Increment count of invalid
-                staa    InvalidResult           ; Store new result
+                staa    ValidResult           ; Store new result
 End_If
+
+                ; Increment x by number of digits
+                tfr     x,d                     ; Place x into register d
+                addd    #NUMDIGITS              ; Increment d by number of digits
+                tfr     d,x                     ; Put x back where it belongs
+                
                 ; Check if this is the last card
+                cpx     #TotalSize             ; test if this is the last card
+                blo     Loop                   ; Loop if it was
 
 ; --- End of changed code
 
