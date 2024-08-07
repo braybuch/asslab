@@ -66,7 +66,9 @@ TotalSize       ds      2
 Loop
                 ; Calculate for odd numbers
                 ldab    #NUMDIGITS              ; Pass number of digits to Add_Odd sr
+                pshx
                 jsr     Add_Odd                 ; Calculate for odd numbers
+                pulx
                 pshb                            ; Push sum of odd numbers to stack
 
                 ; Calculate for even numbers

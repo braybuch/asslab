@@ -38,20 +38,36 @@ Push_Odds       ; For i = 0, i less than number digits, i++
 
 Pull_Odds      	; While i is greater or equal to 0
               	pula                    ; Pull the even digit
+              	
+              	;   Double a
+                tfr     a,b
+                aba
 
                	; If this number has two digits
-               	cmpa     #9
-               	bgt      Cross_Multiply ; Cross multiply
-Cross_Multiply
-                ; Do cross multiplication
+               	cmpa    #9
+               	bgt     Cross_Add ; Cross add
+               	bra     Skip_Cross_Add
+               	
+Cross_Add
+                ; Do cross add
+                tfr 	a,b             ; Copy a to b
+                clra                    ; Clear leading register a
+                ldx     #10             ; Load 10 as divisor
+                idiv                    ; Divide current value by 10
+                ; b now contains the answer and x contains remainder
+
+                ; Swap x to contain address of value
+                stx 	currentOdd
+                ldx     currentOdd
                 
-                bra     End_Multiply
-                ; else
-                tfr a,b                 ; copy register a to b
-                aba                     ; "multiply a by 2"
-
-End_Multiply
-
+                ; Remove leading bit from value
+                ldaa    1,x
+                
+                ; Add remainder and answer together
+                aba
+                
+                
+Skip_Cross_Add
               	; Add to previous sum
                 ldab        oddSum     ; load previous sum
                 aba                    ; Add previous sum to current digit
