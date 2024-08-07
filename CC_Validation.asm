@@ -15,7 +15,7 @@ PROGRAMSTART    equ     $2000                   ; Executable code starts here
 
 ; Hardware Configuration - Complete the Constant values
 DIGIT3_PP0      equ    %10000000                        ; HEX Display MSB (left most digit)
-DIGIT0_PP3      equ    %00001000                        ; Display LSB (right most digit)
+DIGIT0_PP3      equ    %00000001                        ; Display LSB (right most digit)
 
 
 ; Program Constants - Do not change these values
